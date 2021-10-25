@@ -8,17 +8,13 @@
     {% csrf_token %}
 
     <div class="mt-4">
-      {{ form.name }}
-    </div>
-    <div class="mt-4">
-        {{ form.surname }}
-      </div>
-    <div class="mt-4">
+    email
       {{ form.email }}
     </div>
     <div class="mt-4">
-      {{ form.password }}
-    </div>
+    classe
+        {{ form.className }}
+      </div>
     <div class="mt-4">
       <input type="submit" value="Valider" class="bg-gray-900 p-3 cursor-pointer w-full">
     </div>
