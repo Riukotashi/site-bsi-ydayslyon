@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+
+
+{% block title %}Accueil{% endblock title %}
+
+{% block content %}
+<form action="/" method="post" class="join-form mt-8 m-auto">
+    {% csrf_token %}
+
+    <div class="mt-4">
+      {{ form.name }}
+    </div>
+    <div class="mt-4">
+        {{ form.surname }}
+      </div>
+    <div class="mt-4">
+      {{ form.email }}
+    </div>
+    <div class="mt-4">
+      {{ form.password }}
+    </div>
+    <div class="mt-4">
+      <input type="submit" value="Valider" class="bg-gray-900 p-3 cursor-pointer w-full">
+    </div>
+  </form>
+{% endblock content %}
