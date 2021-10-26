@@ -1,22 +1,43 @@
 {% extends 'layout.html' %}
+{% load bootstrap5 %}
 
 
 {% block title %}Accueil{% endblock title %}
 
 {% block content %}
-<form action="/" method="post" class="join-form mt-8 m-auto">
-    {% csrf_token %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 offset-md-4">
+                <div class="login-form bg-light mt-4 p-4">
+                    <form action="{% url 'homepage' %}" method="post" class="row g-3">
+                    {% csrf_token %}
 
-    <div class="mt-4">
-    email
-      {{ form.email }}
+                        <h4>Compte Ydays</h4>
+
+                        <div class="col-12">
+                            <label>Email</label>
+
+                                <input type="text" name="username" class="form-control" placeholder="email">
+
+                        </div>
+
+                        <div class="col-12">
+                            <label>Mot de passe</label>
+
+                                <input type="password" name="password" class="form-control" placeholder="password">
+
+                        </div>
+
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-dark float-end">Register</button>
+                        </div>
+                    </form>
+                    <hr class="mt-4">
+                    <div class="col-12">
+                        <p class="text-center mb-0"> <a href="{% url 'forgotpassword' %}">Mot de passe oublié ?</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="mt-4">
-    classe
-        {{ form.className }}
-      </div>
-    <div class="mt-4">
-      <input type="submit" value="Valider" class="bg-gray-900 p-3 cursor-pointer w-full">
-    </div>
-  </form>
 {% endblock content %}

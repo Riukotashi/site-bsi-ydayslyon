@@ -1,4 +1,7 @@
 body {
-    background-color: #0c4b33;
-    color: #fff;
+    background-color: #e3e0e0;
   }
+.center_div{
+    margin: 0 auto;
+    width:50% /* value of your choice which suits your alignment */
+}

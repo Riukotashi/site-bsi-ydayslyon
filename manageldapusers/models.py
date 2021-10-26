@@ -1,8 +1,8 @@
 from django.db import models
 
+
 # Create your models here.
 class LdapUser(models.Model):
-
     CHOICES = (
         ('toto', 'tata'),
         ('LIM', 'LIMART'),
@@ -19,10 +19,9 @@ class LdapUser(models.Model):
     username = models.CharField(max_length=255, unique=True)
     email = models.EmailField(unique=True)
     # Est-ce que l'utilisateur à validé son inscription
-    is_active =     models.BooleanField(default=False)
+    is_active = models.BooleanField(default=False)
     # Est-ce que le compte a été validé par un admin
     isValidated = models.BooleanField(default=False)
-
 
     # def save(self, *args, **kwargs):
     #     self.name = self.name.upper()

@@ -1,4 +1,10 @@
+{% load bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% bootstrap_messages %}
+
 {% load static %}
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -8,14 +14,6 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
   </head>
   <body>
-    <header>
-      <h1>Page header</h1>
-    </header>
-
     {% block content %}{% endblock content %}
-
-    <footer>
-      <h1>Page footer</h1>
-    </footer>
   </body>
 </html>
