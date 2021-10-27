@@ -21,7 +21,7 @@ class LdapUser(models.Model):
     # Est-ce que l'utilisateur à validé son inscription
     is_active = models.BooleanField(default=False)
     # Est-ce que le compte a été validé par un admin
-    isValidated = models.BooleanField(default=False)
+    is_validated = models.BooleanField(default=False)
 
     # def save(self, *args, **kwargs):
     #     self.name = self.name.upper()

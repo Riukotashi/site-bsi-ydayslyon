@@ -31,7 +31,7 @@ def homepage(request):
         if choice_is_valid:
             print("choice fonctionne")
 
-        if splitted_email[1] == "protonmail.com" and choice_is_valid:
+        if splitted_email[1] == "ynov.com" and choice_is_valid:
             student.firstname = splitted_email[0].split('.')[0].capitalize()
             student.lastname = splitted_email[0].split('.')[1].upper()
             student.fullname = student.lastname + " " + student.firstname
@@ -61,8 +61,8 @@ def send_reset_password_mail(link_to_send, ldap_user):
 def forgot_password(request):
     if request.method == 'POST':
         email = request.POST.__getitem__('email')
-        #a implementer avec la bdd/ldap3 , check si il existe deja
-        send_reset_password_mail(link_to_send=generate_unique_link(),ldap_user=email)
+        # a implementer avec la bdd/ldap3 , check si il existe deja
+        send_reset_password_mail(link_to_send=generate_unique_link(), ldap_user=email)
 
         return render(request, 'manageldapusers/forgotPassword.html', locals())
     return render(request, 'manageldapusers/forgotPassword.html', locals())
@@ -71,3 +71,10 @@ def forgot_password(request):
 def generate_unique_link():
     return uuid.uuid4().hex[:24]
 
+
+def send_validation_mail(ldap_user, subject, message):
+    try:
+        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [ldap_user])
+        return True
+    except:
+        return False
