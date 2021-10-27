@@ -16,24 +16,22 @@
 
                         <div class="col-12">
                             <label>Email</label>
+                                {{ form.email }}
 
-                                <input type="text" name="username" class="form-control" placeholder="email">
-
-                        </div>
-
-                        <div class="col-12">
-                            <label>Mot de passe</label>
-
-                                <input type="password" name="password" class="form-control" placeholder="password">
 
                         </div>
 
                         <div class="col-12">
-                            <button type="submit" class="btn btn-dark float-end">Register</button>
+                            <label>Classe</label>
+                                {{ form.className }}
+                        </div>
+
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-dark center_div">Register</button>
                         </div>
                     </form>
                     <hr class="mt-4">
-                    <div class="col-12">
+                    <div class="col-12 center_div">
                         <p class="text-center mb-0"> <a href="{% url 'forgotpassword' %}">Mot de passe oublié ?</a></p>
                     </div>
                 </div>

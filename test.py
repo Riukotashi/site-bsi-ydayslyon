@@ -8,19 +8,19 @@ from email import encoders
 from email.header import Header
 from email.utils import formataddr
 
-msg = MIMEMultipart()
-msg['From'] = 'jeanbombeurree@gmail.com'
-msg['To'] = 'jeanbombeurree@gmail.com'
-msg['Subject'] = 'Le sujet de mon mail' 
-message = 'Bonjour !'
-msg.attach(MIMEText(message))
-mailserver = smtplib.SMTP('smtp.gmail.com', 587)
-mailserver.ehlo()
-mailserver.starttls()
-mailserver.ehlo()
-mailserver.login('jeanbombeurree@gmail.com', 'Azerty69*')
-mailserver.sendmail('jeanbombeurree@gmail.com', 'jeanbombeurree@gmail.com', msg.as_string())
-mailserver.quit()
+# msg = MIMEMultipart()
+# msg['From'] = 'jeanbombeurree@gmail.com'
+# msg['To'] = 'jeanbombeurree@gmail.com'
+# msg['Subject'] = 'Le sujet de mon mail'
+# message = 'Bonjour !'
+# msg.attach(MIMEText(message))
+# mailserver = smtplib.SMTP('smtp.gmail.com', 587)
+# mailserver.ehlo()
+# mailserver.starttls()
+# mailserver.ehlo()
+# mailserver.login('jeanbombeurree@gmail.com', 'Azerty69*')
+# mailserver.sendmail('jeanbombeurree@gmail.com', 'jeanbombeurree@gmail.com', msg.as_string())
+# mailserver.quit()
 
 
 
