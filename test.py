@@ -90,9 +90,6 @@ def create_user(admin_pass):
         ('userPrincipalName', bytes(username, encoding='utf-8')),
         ('mail', bytes(email, encoding='utf-8')),
         ('userAccountControl', bytes("544", encoding='utf-8')),
-        # ('distinguishedName', bytes(distinguishedName, encoding='utf-8')),       
-        # ('givenname', b"Kevin"),
-        # ('mail', b"kevin.monnot@ynov.com"),
         ('unicodePwd', bytes(unicode_pass, encoding='utf-16-le'))
     ])
     #     entry.append( ('host', user['hosts']) )
