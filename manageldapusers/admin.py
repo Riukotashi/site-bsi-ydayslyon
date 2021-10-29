@@ -19,8 +19,6 @@ def make_validation(self, request, queryset):
             send_validation_mail(message="Ton compte a été validé, tu peux aller changer ton mot de passe sur l'interface web",
                                  ldap_user=user.email,
                                  subject="Activation du compte Active Directory Ydays")
-
-
             p = subprocess.Popen(["powershell.exe",
                                   STATICFILES_DIRS[0] + "\\powershell\\test.ps1"],
                                  stdout=subprocess.PIPE)
