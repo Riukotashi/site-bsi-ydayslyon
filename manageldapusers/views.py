@@ -4,15 +4,12 @@ import uuid
 from django.conf import settings
 from django.shortcuts import render
 from django.core.mail import send_mail
-
+from django.contrib.sites.shortcuts import get_current_site
 from manageldapusers.forms import registerForm
 from manageldapusers.models import LdapUser
 
 
 def homepage(request):
-    # send_reset_password_mail('lol je suis le lien', ['kevin.monot@ynov.com'])
-    # return render(request, 'manageldapusers/index.html', locals())
-
     if request.method == 'POST':
         # initialise le formulaire avec les données envoyées
         form = registerForm(request.POST)
@@ -21,7 +18,6 @@ def homepage(request):
         student.email = request.POST.get('email', False).lower()
         splitted_email = student.email.split('@')
         print(request.POST.get('className', False))
-
         choice_is_valid = None
         for choice in LdapUser.CHOICES:
             print(choice[0])
@@ -36,8 +32,6 @@ def homepage(request):
             student.lastname = splitted_email[0].split('.')[1].upper()
             student.fullname = student.lastname + " " + student.firstname
             student.username = (student.firstname[0] + student.lastname).lower()
-            # ça marche pas parce que db sqlite
-            # inactive_user = send_verification_email(request, student)
             student.save()
         else:
             print("caca")
@@ -57,12 +51,31 @@ def send_reset_password_mail(link_to_send, ldap_user):
     except:
         return False
 
+def reset_password(request, username, token):
+    try:
+        ldapuser = LdapUser.objects.get(username=username, token_reset_password=token)
+        # Faire un système pour gérer l'expiration du token
+    except LdapUser.DoesNotExist:
+        ldapuser = None
+    if ldapuser:
+        if request.method == 'POST':
+            print("mdp changé")
+        return render(request, 'manageldapusers/resetPassword.html', locals())
+
+
 
 def forgot_password(request):
     if request.method == 'POST':
         email = request.POST.__getitem__('email')
+        ldapuser = LdapUser.objects.get(email=email)
+        random_token = generate_unique_link()
+        ldapuser.token_reset_password = random_token
+        print(get_current_site(request))
+        link_to_send="https://"+str(get_current_site(request))+"/resetpassword/"+ldapuser.username+"/"+ldapuser.token_reset_password
+        
+        ldapuser.save()
         # a implementer avec la bdd/ldap3 , check si il existe deja
-        send_reset_password_mail(link_to_send=generate_unique_link(), ldap_user=email)
+        send_reset_password_mail(link_to_send=link_to_send, ldap_user=email)
 
         return render(request, 'manageldapusers/forgotPassword.html', locals())
     return render(request, 'manageldapusers/forgotPassword.html', locals())
