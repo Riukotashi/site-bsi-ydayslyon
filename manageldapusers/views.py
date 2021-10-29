@@ -1,14 +1,16 @@
-import json
+import subprocess
 import uuid
 
 from django.conf import settings
 from django.shortcuts import render
 from django.core.mail import send_mail
 from django.contrib.sites.shortcuts import get_current_site
+from bsiydayslyon.settings import STATICFILES_DIRS
 from manageldapusers.forms import registerForm
 from manageldapusers.models import LdapUser
 
 
+SERVER = "192.168.68.1"
 def homepage(request):
     if request.method == 'POST':
         # initialise le formulaire avec les données envoyées
@@ -59,7 +61,18 @@ def reset_password(request, username, token):
         ldapuser = None
     if ldapuser:
         if request.method == 'POST':
-            print("mdp changé")
+            password = request.POST.__getitem__('password')
+            p = subprocess.Popen(["powershell.exe",
+                                  STATICFILES_DIRS[0] + "\\powershell\\reset-password.ps1 -password \""+ password + "\" -server \"" + SERVER +
+                                  "\" -username \"" + ldapuser.username + "\""],
+                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            out, err =p.communicate()
+            print(out)
+            print(err)
+            print(p.returncode)
+            ldapuser.token_reset_password = None
+            ldapuser.save()
+            
         return render(request, 'manageldapusers/resetPassword.html', locals())
 
 
