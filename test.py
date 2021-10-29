@@ -8,19 +8,19 @@ from email import encoders
 from email.header import Header
 from email.utils import formataddr
 
-msg = MIMEMultipart()
-msg['From'] = 'jeanbombeurree@gmail.com'
-msg['To'] = 'jeanbombeurree@gmail.com'
-msg['Subject'] = 'Le sujet de mon mail' 
-message = 'Bonjour !'
-msg.attach(MIMEText(message))
-mailserver = smtplib.SMTP('smtp.gmail.com', 587)
-mailserver.ehlo()
-mailserver.starttls()
-mailserver.ehlo()
-mailserver.login('jeanbombeurree@gmail.com', 'Azerty69*')
-mailserver.sendmail('jeanbombeurree@gmail.com', 'jeanbombeurree@gmail.com', msg.as_string())
-mailserver.quit()
+# msg = MIMEMultipart()
+# msg['From'] = 'jeanbombeurree@gmail.com'
+# msg['To'] = 'jeanbombeurree@gmail.com'
+# msg['Subject'] = 'Le sujet de mon mail'
+# message = 'Bonjour !'
+# msg.attach(MIMEText(message))
+# mailserver = smtplib.SMTP('smtp.gmail.com', 587)
+# mailserver.ehlo()
+# mailserver.starttls()
+# mailserver.ehlo()
+# mailserver.login('jeanbombeurree@gmail.com', 'Azerty69*')
+# mailserver.sendmail('jeanbombeurree@gmail.com', 'jeanbombeurree@gmail.com', msg.as_string())
+# mailserver.quit()
 
 
 
@@ -90,9 +90,6 @@ def create_user(admin_pass):
         ('userPrincipalName', bytes(username, encoding='utf-8')),
         ('mail', bytes(email, encoding='utf-8')),
         ('userAccountControl', bytes("544", encoding='utf-8')),
-        # ('distinguishedName', bytes(distinguishedName, encoding='utf-8')),       
-        # ('givenname', b"Kevin"),
-        # ('mail', b"kevin.monnot@ynov.com"),
         ('unicodePwd', bytes(unicode_pass, encoding='utf-16-le'))
     ])
     #     entry.append( ('host', user['hosts']) )
