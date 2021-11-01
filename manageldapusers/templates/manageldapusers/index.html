@@ -10,29 +10,39 @@
             <div class="col-md-4 offset-md-4">
                 <div class="login-form bg-light mt-4 p-4">
                     <form action="{% url 'homepage' %}" method="post" class="row g-3">
-                    {% csrf_token %}
+                        {% csrf_token %}
 
                         <h4>Compte Ydays</h4>
 
                         <div class="col-12">
                             <label>Email</label>
-                                {{ form.email }}
+                            {{ form.email }}
 
 
                         </div>
 
                         <div class="col-12">
                             <label>Classe</label>
-                                {{ form.className }}
+                            {{ form.className }}
                         </div>
 
                         <div class="col-12">
                             <button type="submit" class="btn btn-dark center_div">Register</button>
                         </div>
+                        {% if msg %}
+                            <div class="alert alert-success" role="alert">
+                                {{ msg }}
+                            </div>
+                        {% endif %}
+                        {% if error %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ error }}
+                            </div>
+                        {% endif %}
                     </form>
                     <hr class="mt-4">
                     <div class="col-12 center_div">
-                        <p class="text-center mb-0"> <a href="{% url 'forgotpassword' %}">Mot de passe oublié ?</a></p>
+                        <p class="text-center mb-0"><a href="{% url 'forgotpassword' %}">Changer de mot de passe</a></p>
                     </div>
                 </div>
             </div>
