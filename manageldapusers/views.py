@@ -147,9 +147,7 @@ def forgot_password(request):
             ldap_user = LdapUser.objects.get(email=email)
             if ldap_user.is_active & ldap_user.is_validated:
                 ldap_user.token_reset_password = generate_unique_link()
-                link_to_send = "https://" + str(
-                    get_current_site(
-                        request)) + "/resetpassword/" + ldap_user.username + "/" + ldap_user.token_reset_password
+                link_to_send = f"https://{get_current_site(request)}/resetpassword/{ldap_user.token_reset_password}"
                 ldap_user.date_validation_token = datetime.now().__add__(timedelta(days=2))
                 ldap_user.save()
                 send_reset_password_mail(link_to_send=link_to_send, ldap_user=email)
