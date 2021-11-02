@@ -1,0 +1,25 @@
+{% extends 'layout.html' %}
+{% load bootstrap5 %}
+
+
+{% block title %}Accueil{% endblock title %}
+
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 offset-md-4">
+                {% if is_user_accessible %}
+                    <p>Impossible d'activer le compte</p>
+                {% endif %}
+                {% if ldap_user.is_active %}
+                    <p>Compte activé, il est désormais en attente de validation par les administrateurs</p>
+
+                {% else %}
+                    <p>Impossible d'activer le compte, veuillez remplir de nouveau le formulaire d'inscription</p>
+
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock content %}

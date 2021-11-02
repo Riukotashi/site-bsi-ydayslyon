@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from django.contrib import admin
 from django.contrib import messages
 from django.utils.translation import ngettext
@@ -32,9 +33,9 @@ def make_validation(self, request, queryset):
                                   "\" -username \"" + user.username + "\" -fullname \"" + user.fullname + "\" -firstname \"" + user.firstname +
                                   "\" -lastname \"" + user.lastname + "\" -ou \"" + ou + "\" -email \"" + user.email + "\""],
                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            out, err =p.communicate()
-            print(out)
-            print(err)
+            # out, err =p.communicate()
+            # print(out)
+            # print(err)
             print(p.returncode)
         else:
             if not user.is_active and user.is_validated:
