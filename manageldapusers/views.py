@@ -31,10 +31,11 @@ def homepage(request):
                 error = "Compte deja activé"
                 return render(request, 'manageldapusers/index.html', locals())
             else:
-                msg = "Email d'activation à été renvoyé"
+                msg = "Email d'activation a été renvoyé"
                 ldap_user.date_activation_token = datetime.now().__add__(timedelta(days=2))
                 date_activation_token_formatted = ldap_user.date_activation_token.strftime("%d %B %Y %I:%M:%S%p")
                 ldap_user.save()
+                print("envoie de mail")
                 send_activation_mail(ldap_user=ldap_user,
                                      subject="Activation de compte Active Directory Ydays",
                                      message=f"Vous pouvez activer votre compte en cliquant sur ce lien : "
@@ -88,9 +89,11 @@ def send_reset_password_mail(link_to_send, ldap_user):
 
 def send_activation_mail(ldap_user, subject, message):
     try:
-        send_mail(subject=subject, message=message, recipient_list=["guillaume.faugeron@ynov.com"], from_email=None)
+        send_mail(subject=subject, message=message, recipient_list=[ldap_user.email], from_email=None)
+        print("envoie de mail")
         return True
     except:
+        print("pas envoie de mail")
         return False
 
 
