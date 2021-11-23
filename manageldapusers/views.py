@@ -33,22 +33,26 @@ def homepage(request):
                 ldap_user.save()
                 print("envoie de mail")
                 send_activation_mail(ldap_user=ldap_user,
-                                     subject="Activation de compte Active Directory Ydays",
-                                     message=f"Vous pouvez activer votre compte en cliquant sur ce lien : "
+                                     subject="[YDAYS] Activation du compte pour l'infrastructure étudiante (BSI)",
+                                     message=f"Bonjour,\n\n"
+                                             f"Vous pouvez activer votre compte en cliquant sur ce lien : "
                                              f"https://{str(get_current_site(request))}/activation/"
                                              f"{ldap_user.token_validate_email}"
-                                             f"\n le lien sera valide jusqu'au {date_activation_token_formatted}")
+                                             f"\n\n Le lien sera valide jusqu'au {date_activation_token_formatted}."
+                                             f"\n\n Votre compte devra être validé par un administrateur, vous receverez un mail lorsque cela sera effectué."
+                                             f"\n\n Cordialement,"
+                                             f"\n\n La BSI du Campus Ynov Lyon")
+                                             
                 return render(request, 'manageldapusers/index.html', locals())
-        for choice in LdapUser.CHOICES:
-            print(choice[0])
-            if str(request.POST.get('className', False)) == choice[0]:
-                choice_is_valid = True
-                print('choix')
+        # for choice in LdapUser.CHOICES:
+        #     print(choice[0])
+        #     if str(request.POST.get('className', False)) == choice[0]:
+        #         choice_is_valid = True
 
-        if choice_is_valid:
-            print("choice fonctionne")
+        # if choice_is_valid:
+        #     print("choice fonctionne")
 
-        if splitted_email[1] == "ynov.com" and choice_is_valid:
+        if splitted_email[1] == "ynov.com":
             student.firstname = splitted_email[0].split('.')[0].capitalize()
             student.lastname = splitted_email[0].split('.')[1].upper()
             student.fullname = student.lastname + " " + student.firstname
@@ -57,12 +61,16 @@ def homepage(request):
             student.date_activation_token = datetime.now().__add__(timedelta(days=2))
             student.save()
             date_activation_token_formatted = student.date_activation_token.strftime("%d %B %Y %I:%M:%S%p")
-            send_activation_mail(ldap_user=student,
-                                 subject="Activation de compte Active Directory Ydays",
-                                 message=f"Vous pouvez activer votre compte en cliquant sur ce lien : "
-                                         f"https://{str(get_current_site(request))}/activation/"
-                                         f"{student.token_validate_email}"
-                                         f"\n le lien sera valide jusqu'au {date_activation_token_formatted}")
+            send_activation_mail(ldap_user=ldap_user,
+                                     subject="[YDAYS] Activation du compte pour l'infrastructure étudiante (BSI)",
+                                     message=f"Bonjour,\n\n"
+                                             f"Vous pouvez activer votre compte en cliquant sur ce lien : "
+                                             f"https://{str(get_current_site(request))}/activation/"
+                                             f"{ldap_user.token_validate_email}"
+                                             f"\n\n Le lien sera valide jusqu'au {date_activation_token_formatted}."
+                                             f"\n\n Votre compte devra être validé par un administrateur, vous receverez un mail lorsque cela sera effectué."
+                                             f"\n\n Cordialement,"
+                                             f"\n\n La BSI du Campus Ynov Lyon")
         else:
             error = "Impossible de s'enregistrer avec un email externe à Ynov"
             return render(request, 'manageldapusers/index.html', locals())
@@ -74,14 +82,17 @@ def homepage(request):
 
 
 def send_reset_password_mail(link_to_send, ldap_user):
-    subject = "YDAYS INFRA RESEST PASSWORD"
-    message = link_to_send
+    subject = "[YDAYS] Changement du mot de passe du compte pour l'infrastructure étudiante (BSI)"
     try:
-        send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [ldap_user])
+        send_mail(subject=subject, from_email=settings.DEFAULT_FROM_EMAIL, recipient_list=[ldap_user], 
+                    message=f"Bonjour,\n\n"
+                            f"Voici le lien pour changer ton mot de passe : {link_to_send}\n\n"
+                            f"Cordialement,\n\n"
+                            f"La BSI du Campus Ynov Lyon")
         return True
     except:
+        print("non")
         return False
-
 
 def send_activation_mail(ldap_user, subject, message):
     try:
