@@ -1,18 +1,14 @@
-import subprocess
 import uuid
-
 from datetime import datetime, timedelta
 from django.conf import settings
 from django.shortcuts import render
 from django.core.mail import send_mail
 from django.contrib.sites.shortcuts import get_current_site
+import ldap
 from pytz import utc
-
-from bsiydayslyon.settings import STATICFILES_DIRS
+from bsiydayslyon.settings import DEFAULT_OU_USER, LDAP_ADMIN_DN, LDAP_ADMIN_PASSWORD, LDAP_SERVER, STATICFILES_DIRS
 from manageldapusers.forms import registerForm
 from manageldapusers.models import LdapUser
-
-SERVER = "192.168.68.1"
 
 
 def homepage(request):
@@ -31,10 +27,11 @@ def homepage(request):
                 error = "Compte deja activé"
                 return render(request, 'manageldapusers/index.html', locals())
             else:
-                msg = "Email d'activation à été renvoyé"
+                msg = "Email d'activation a été renvoyé"
                 ldap_user.date_activation_token = datetime.now().__add__(timedelta(days=2))
                 date_activation_token_formatted = ldap_user.date_activation_token.strftime("%d %B %Y %I:%M:%S%p")
                 ldap_user.save()
+                print("envoie de mail")
                 send_activation_mail(ldap_user=ldap_user,
                                      subject="Activation de compte Active Directory Ydays",
                                      message=f"Vous pouvez activer votre compte en cliquant sur ce lien : "
@@ -88,9 +85,11 @@ def send_reset_password_mail(link_to_send, ldap_user):
 
 def send_activation_mail(ldap_user, subject, message):
     try:
-        send_mail(subject=subject, message=message, recipient_list=["guillaume.faugeron@ynov.com"], from_email=None)
+        send_mail(subject=subject, message=message, recipient_list=[ldap_user.email], from_email=None)
+        print("envoie de mail")
         return True
     except:
+        print("pas envoie de mail")
         return False
 
 
@@ -121,18 +120,9 @@ def reset_password(request, token):
         error = "Token invalide"
         return render(request, 'manageldapusers/index.html', locals())
     ldap_user = LdapUser.objects.get(token_reset_password=token)
-
     if request.method == 'POST':
         password = request.POST.__getitem__('password')
-        p = subprocess.Popen(["powershell.exe",
-                              STATICFILES_DIRS[
-                                  0] + "\\powershell\\reset-password.ps1 -password \"" + password + "\" -server \"" + SERVER +
-                              "\" -username \"" + ldap_user.username + "\""],
-                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out, err = p.communicate()
-        print(out)
-        print(err)
-        print(p.returncode)
+        change_user_password(password, ldap_user)
         ldap_user.token_reset_password = None
         ldap_user.save()
         return render(request, 'manageldapusers/resetPassword.html', locals())
@@ -173,3 +163,20 @@ def send_validation_mail(ldap_user, subject, message):
         return True
     except:
         return False
+
+def change_user_password(password, ldap_user):
+    ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
+    ldap_conn = ldap.initialize("ldaps://" +LDAP_SERVER + ":636")
+    ldap_conn.set_option(ldap.OPT_REFERRALS, 0)
+    ldap_conn.set_option(ldap.OPT_PROTOCOL_VERSION, 3)
+    ldap_conn.set_option(ldap.OPT_X_TLS, ldap.OPT_X_TLS_DEMAND)
+    ldap_conn.set_option(ldap.OPT_X_TLS_DEMAND, True)
+    ldap_conn.set_option(ldap.OPT_DEBUG_LEVEL, 255)
+    ldap_conn.simple_bind_s(LDAP_ADMIN_DN, LDAP_ADMIN_PASSWORD)
+    ou = DEFAULT_OU_USER
+    dn = "CN=" + ldap_user.fullname + "," + ou
+    newpwd_utf16 = '"{0}"'.format(password).encode('utf-16-le')
+    mod_list = [
+        (ldap.MOD_REPLACE, "unicodePwd", newpwd_utf16),
+    ]
+    ldap_conn.modify_s(dn, mod_list)

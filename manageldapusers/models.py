@@ -31,6 +31,8 @@ class LdapUser(models.Model):
 
     def __str__(self):
         return self.email
+    
+    
 
     # def save(self, *args, **kwargs):
     #     self.name = self.name.upper()
