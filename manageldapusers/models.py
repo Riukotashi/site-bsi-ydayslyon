@@ -3,18 +3,18 @@ from django.db import models
 
 # Create your models here.
 class LdapUser(models.Model):
-    CHOICES = (
-        ('toto', 'tata'),
-        ('LIM', 'LIMART'),
-        ('ING', 'Ingesup'),
-        ('ANIM', 'Animation'),
-        ('ISEE', 'ISEE'),
-        ('AUDIO', 'Audiovisuel')
-    )
+    # CHOICES = (
+    #     ('toto', 'tata'),
+    #     ('LIM', 'LIMART'),
+    #     ('ING', 'Ingesup'),
+    #     ('ANIM', 'Animation'),
+    #     ('ISEE', 'ISEE'),
+    #     ('AUDIO', 'Audiovisuel')
+    # )
 
     firstname = models.CharField(max_length=255)
     lastname = models.CharField(max_length=255)
-    classname = models.CharField(choices=CHOICES, max_length=255, null=True)
+    # classname = models.CharField(choices=CHOICES, max_length=255, null=True)
     fullname = models.CharField(max_length=255)
     username = models.CharField(max_length=255, unique=True)
     email = models.EmailField(unique=True)
