@@ -1,2 +1,4 @@
-django-bootstrap-v5
-python-ldap
+python-ldap==3.3.1
+Django==3.2.8
+django-bootstrap-v5==1.0.7
+sqlparse==0.4.2
