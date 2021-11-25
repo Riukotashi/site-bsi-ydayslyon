@@ -8,6 +8,7 @@ from manageldapusers.models import LdapUser
 from manageldapusers.views import send_validation_mail
 import random
 import string
+from django.contrib.sites.shortcuts import get_current_site
 
 
 
@@ -19,13 +20,15 @@ def make_validation(self, request, queryset):
         if not user.is_validated and user.is_active :
             updated += updated
             queryset.update(is_validated=True)
-            send_validation_mail(message="Ton compte a été validé, tu peux aller changer ton mot de passe sur l'interface web",
-                                 ldap_user=user.email,
-                                 subject="Activation du compte Active Directory Ydays")
-            if user.classname == "formateur":
-                ou = DEFAULT_OU_INTERVENANT
-            else:
-                ou = DEFAULT_OU_USER
+            send_validation_mail(ldap_user=user.email,
+                                 subject="[YDAYS] Validation du compte pour l'infrastructure étudiante (BSI)",
+                                 message=f"Bonjour,\n\n"
+                                         f"Ton compte a été validé, tu peux aller changer ton mot de passe sur "
+                                         f"l'interface web en allant sur ce lien: https://{str(get_current_site(request))}/forgotpassword\n\n"
+                                         f"Cordialement,\n\n"
+                                         f"La BSI du Campus Ynov Lyon")
+
+            ou = DEFAULT_OU_USER
             create_ldap_account (user, ou)
             change_user_password(generate_random_password(), user)
 
