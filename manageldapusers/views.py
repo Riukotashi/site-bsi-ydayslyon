@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.core.mail import send_mail
 from django.contrib.sites.shortcuts import get_current_site
 import ldap
+from django.utils import timezone
 from pytz import utc
 from bsiydayslyon.settings import DEFAULT_OU_USER, LDAP_ADMIN_DN, LDAP_ADMIN_PASSWORD, LDAP_SERVER, STATICFILES_DIRS
 from manageldapusers.forms import registerForm
@@ -28,7 +29,7 @@ def homepage(request):
                 return render(request, 'manageldapusers/index.html', locals())
             else:
                 msg = "Email d'activation a été renvoyé"
-                ldap_user.date_activation_token = datetime.now().__add__(timedelta(days=2))
+                ldap_user.date_activation_token = timezone.now().__add__(timedelta(days=2))
                 date_activation_token_formatted = ldap_user.date_activation_token.strftime("%d %B %Y %I:%M:%S%p")
                 ldap_user.save()
                 print("envoie de mail")
@@ -53,20 +54,21 @@ def homepage(request):
         #     print("choice fonctionne")
 
         if splitted_email[1] == "ynov.com":
+            msg = "Email d'activation envoyé"
             student.firstname = splitted_email[0].split('.')[0].capitalize()
             student.lastname = splitted_email[0].split('.')[1].upper()
             student.fullname = student.lastname + " " + student.firstname
             student.username = (student.firstname[0] + student.lastname).lower()
             student.token_validate_email = (generate_unique_link())
-            student.date_activation_token = datetime.now().__add__(timedelta(days=2))
+            student.date_activation_token = timezone.now().__add__(timedelta(days=2))
             student.save()
             date_activation_token_formatted = student.date_activation_token.strftime("%d %B %Y %I:%M:%S%p")
-            send_activation_mail(ldap_user=ldap_user,
+            send_activation_mail(ldap_user=student,
                                      subject="[YDAYS] Activation du compte pour l'infrastructure étudiante (BSI)",
                                      message=f"Bonjour,\n\n"
                                              f"Vous pouvez activer votre compte en cliquant sur ce lien : "
                                              f"https://{str(get_current_site(request))}/activation/"
-                                             f"{ldap_user.token_validate_email}"
+                                             f"{student.token_validate_email}"
                                              f"\n\n Le lien sera valide jusqu'au {date_activation_token_formatted}."
                                              f"\n\n Votre compte devra être validé par un administrateur, vous receverez un mail lorsque cela sera effectué."
                                              f"\n\n Cordialement,"
