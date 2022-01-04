@@ -1,4 +1,4 @@
-import ldap3
+import ldap
 import os
 import smtplib
 from email.mime.multipart import MIMEMultipart
@@ -30,15 +30,20 @@ LDAP_HOST = 'ldap://192.168.232.128'
 
 
 
-# ldap_con = ldap3.initialize('ldap://192.168.232.131')
-# ldap_con.set_option(ldap3.OPT_REFERRALS, 0)
-# ldap_con.simple_bind_s('cn=Administrateur,cn=Users,dc=soprofitable,dc=fr', 'Azerty69*')
+ldap_con = ldap.initialize('ldap://192.168.232.128')
+ldap_con.set_option(ldap.OPT_REFERRALS, 0)
+ldap_con.simple_bind_s('cn=Administrateur,cn=Users,dc=soprofitable,dc=fr', 'Azerty69*')
 # ldap_con.simple_bind_s('cn=MONNOT Kevin,ou=Commercial,ou=Utilisateurs,ou=Soprofitable,dc=soprofitable,dc=fr', 'toto1234!')
 
-# result = ldap_con.search_s('cn=MONNOT Kevin,ou=Commercial,ou=Utilisateurs,ou=Soprofitable,dc=soprofitable,dc=fr',
-#                           ldap.SCOPE_SUBTREE)
+result = ldap_con.search_ext_s('ou=Commercial,ou=Utilisateurs,ou=Soprofitable,dc=soprofitable,dc=fr', ldap.SCOPE_SUBTREE, "(userPrincipalName=kmoonnot)"
+                           )
 
-# print(result)
+if result:
+    print("list is not empty")
+else:
+    print("list is empty")
+# print(result.count)
+# print(type(result))
 
 # email = "kevin.monnot@ynov.com"
 # splitted_email = email.split('@')
@@ -94,16 +99,16 @@ def create_user(admin_pass):
     ])
     #     entry.append( ('host', user['hosts']) )
 
-    ldap_conn = ldap3.initialize(LDAP_HOST)
+    ldap_conn = ldap.initialize(LDAP_HOST)
     ldap_conn.simple_bind_s(LDAP_ADMIN_DN, admin_pass)
-    ldap_conn.set_option(ldap3.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
-    ldap_conn.set_option( ldap3.OPT_X_TLS_DEMAND, True )
+    ldap_conn.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
+    ldap_conn.set_option( ldap.OPT_X_TLS_DEMAND, True )
 
-    ldap_conn.set_option(ldap3.OPT_REFERRALS, 0)
-    ldap_conn.set_option(ldap3.OPT_PROTOCOL_VERSION, 3)
-    ldap_conn.set_option(ldap3.OPT_X_TLS,ldap.OPT_X_TLS_DEMAND)
-    ldap_conn.set_option( ldap3.OPT_X_TLS_DEMAND, True )
-    ldap_conn.set_option( ldap3.OPT_DEBUG_LEVEL, 255 )
+    ldap_conn.set_option(ldap.OPT_REFERRALS, 0)
+    ldap_conn.set_option(ldap.OPT_PROTOCOL_VERSION, 3)
+    ldap_conn.set_option(ldap.OPT_X_TLS,ldap.OPT_X_TLS_DEMAND)
+    ldap_conn.set_option( ldap.OPT_X_TLS_DEMAND, True )
+    ldap_conn.set_option( ldap.OPT_DEBUG_LEVEL, 255 )
 
     print('tamere1')
     try:
