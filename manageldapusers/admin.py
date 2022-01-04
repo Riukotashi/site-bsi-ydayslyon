@@ -23,7 +23,9 @@ def make_validation(self, request, queryset):
             send_validation_mail(ldap_user=user.email,
                                  subject="[YDAYS] Validation du compte pour l'infrastructure étudiante (BSI)",
                                  message=f"Bonjour,\n\n"
-                                         f"Ton compte a été validé, tu peux aller changer ton mot de passe sur "
+                                         f"Ton compte a été validé."
+                                         f"Ton nom de compte est {user.username}"
+                                         f"tu peux aller changer ton mot de passe sur "
                                          f"l'interface web en allant sur ce lien: https://{str(get_current_site(request))}/forgotpassword\n\n"
                                          f"Cordialement,\n\n"
                                          f"La BSI du Campus Ynov Lyon")

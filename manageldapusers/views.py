@@ -45,13 +45,7 @@ def homepage(request):
                                              f"\n\n La BSI du Campus Ynov Lyon")
                                              
                 return render(request, 'manageldapusers/index.html', locals())
-        # for choice in LdapUser.CHOICES:
-        #     print(choice[0])
-        #     if str(request.POST.get('className', False)) == choice[0]:
-        #         choice_is_valid = True
 
-        # if choice_is_valid:
-        #     print("choice fonctionne")
 
         if splitted_email[1] == "ynov.com":
             msg = "Email d'activation envoyé"
@@ -138,6 +132,7 @@ def reset_password(request, token):
         change_user_password(password, ldap_user)
         ldap_user.token_reset_password = None
         ldap_user.save()
+        msg = "Mot de passe changé"
         return render(request, 'manageldapusers/resetPassword.html', locals())
     else:
         return render(request, 'manageldapusers/resetPassword.html', locals())
@@ -154,17 +149,58 @@ def forgot_password(request):
                 ldap_user.date_validation_token = datetime.now().__add__(timedelta(days=2))
                 ldap_user.save()
                 send_reset_password_mail(link_to_send=link_to_send, ldap_user=email)
-
+                msg = "Email pour changer de mot de passe envoyé"
                 return render(request, 'manageldapusers/forgotPassword.html', locals())
             else:
                 error = "Impossible de changer un mot de passe sur un compte non activé et non validé"
                 return render(request, 'manageldapusers/forgotPassword.html', locals())
         else:
-            error = "Cet utilisateur n'existe pas"
+            student = LdapUser()
+            student.email = email
+            splitted_email = student.email.split('@')
+
+            student.firstname = splitted_email[0].split('.')[0].capitalize()
+            student.lastname = splitted_email[0].split('.')[1].upper()
+            student.fullname = student.lastname + " " + student.firstname
+            student.username = (student.firstname[0] + student.lastname).lower()
+
+            if splitted_email[1] == "ynov.com":
+                if check_existing_user(student.username) == True:
+                    student.is_active = True
+                    student.is_validated = True
+                    student.token_reset_password = generate_unique_link()
+                    link_to_send = f"https://{get_current_site(request)}/resetpassword/{student.token_reset_password}"
+                    student.date_validation_token = datetime.now().__add__(timedelta(days=2))
+                    send_reset_password_mail(link_to_send=link_to_send, ldap_user=email)
+                    student.save()
+                    msg = "Email pour changer de mot de passe envoyé"
+                else:
+                    error = "Cet utilisateur n'existe pas"
+            else:
+                error = "Merci d'utiliser un mail ynov"
             return render(request, 'manageldapusers/forgotPassword.html', locals())
 
     return render(request, 'manageldapusers/forgotPassword.html', locals())
 
+
+def check_existing_user(givenname):
+    ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
+    ldap_conn = ldap.initialize("ldap://" + LDAP_SERVER)
+    ldap_conn.set_option(ldap.OPT_REFERRALS, 0)
+    ldap_conn.set_option(ldap.OPT_PROTOCOL_VERSION, 3)
+    ldap_conn.set_option(ldap.OPT_X_TLS, ldap.OPT_X_TLS_DEMAND)
+    ldap_conn.set_option(ldap.OPT_X_TLS_DEMAND, True)
+    ldap_conn.set_option(ldap.OPT_DEBUG_LEVEL, 255)
+    ldap_conn.simple_bind_s(LDAP_ADMIN_DN, LDAP_ADMIN_PASSWORD)
+    ou = DEFAULT_OU_USER
+    filter_givenname = "(userPrincipalName=" + givenname + ")"
+
+    result = ldap_conn.search_ext_s(ou, ldap.SCOPE_SUBTREE, filter_givenname)
+    ldap_conn.unbind_s()
+    if result:
+        return True
+    else:
+        return False
 
 def generate_unique_link():
     return uuid.uuid4().hex[:24]
@@ -179,7 +215,7 @@ def send_validation_mail(ldap_user, subject, message):
 
 def change_user_password(password, ldap_user):
     ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
-    ldap_conn = ldap.initialize("ldaps://" +LDAP_SERVER + ":636")
+    ldap_conn = ldap.initialize("ldaps://" + LDAP_SERVER + ":636")
     ldap_conn.set_option(ldap.OPT_REFERRALS, 0)
     ldap_conn.set_option(ldap.OPT_PROTOCOL_VERSION, 3)
     ldap_conn.set_option(ldap.OPT_X_TLS, ldap.OPT_X_TLS_DEMAND)
@@ -193,3 +229,4 @@ def change_user_password(password, ldap_user):
         (ldap.MOD_REPLACE, "unicodePwd", newpwd_utf16),
     ]
     ldap_conn.modify_s(dn, mod_list)
+    ldap_conn.unbind_s()
