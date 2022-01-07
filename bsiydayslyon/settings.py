@@ -26,6 +26,7 @@ SECRET_KEY = 'django-insecure-=+445zi8xspn#l%28hq)$sx6_+&kcpy)g$3502e$&-#)a%bakf
 DEBUG = True
 
 LDAP_SERVER = "192.168.232.128"
+USER_DOMAIN = "ynovlyon.fr"
 # DEFAULT_OU_USER = "OU=Etudiants,OU=Campus_LYON,DC=ynovlyon,DC=fr"
 DEFAULT_OU_INTERVENANT = "OU=Intervenants,OU=Campus_LYON,DC=ynovlyon,DC=fr"
 DEFAULT_OU_USER = "ou=Commercial,ou=Utilisateurs,ou=Soprofitable,dc=soprofitable,dc=fr"

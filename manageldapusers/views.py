@@ -7,7 +7,7 @@ from django.contrib.sites.shortcuts import get_current_site
 import ldap
 from django.utils import timezone
 from pytz import utc
-from bsiydayslyon.settings import DEFAULT_OU_USER, LDAP_ADMIN_DN, LDAP_ADMIN_PASSWORD, LDAP_SERVER, STATICFILES_DIRS
+from bsiydayslyon.settings import DEFAULT_OU_USER, LDAP_ADMIN_DN, LDAP_ADMIN_PASSWORD, LDAP_SERVER, STATICFILES_DIRS, USER_DOMAIN
 from manageldapusers.forms import registerForm
 from manageldapusers.models import LdapUser
 
@@ -193,7 +193,7 @@ def check_existing_user(givenname):
     ldap_conn.set_option(ldap.OPT_DEBUG_LEVEL, 255)
     ldap_conn.simple_bind_s(LDAP_ADMIN_DN, LDAP_ADMIN_PASSWORD)
     ou = DEFAULT_OU_USER
-    filter_givenname = "(userPrincipalName=" + givenname + ")"
+    filter_givenname = "(userPrincipalName=" + givenname + "@" + USER_DOMAIN + ")"
 
     result = ldap_conn.search_ext_s(ou, ldap.SCOPE_SUBTREE, filter_givenname)
     ldap_conn.unbind_s()
